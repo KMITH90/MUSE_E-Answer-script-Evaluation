@@ -8,7 +8,8 @@ import {
   CheckCircle,
   TrendingUp,
   Play,
-  Loader2
+  Loader2,
+  Trash2
 } from 'lucide-react';
 import {
   Chart as ChartJS,
@@ -35,7 +36,7 @@ const FacultyDashboard = () => {
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // NEW: State to track which exam is currently being evaluated by AI
+  // State to track which exam is currently being evaluated by AI
   const [evaluatingId, setEvaluatingId] = useState(null);
 
   const fetchDashboardData = async () => {
@@ -56,6 +57,20 @@ const FacultyDashboard = () => {
   useEffect(() => {
     fetchDashboardData();
   }, []);
+
+  // DELETE EXAM FUNCTION
+  const deleteExam = async (examId) => {
+    if (window.confirm("Are you sure you want to delete this examination? This will also remove all student submissions for this exam.")) {
+      try {
+        await axios.delete(`http://localhost:5000/api/exams/${examId}`);
+        // Refresh the dashboard data after successful deletion
+        fetchDashboardData();
+      } catch (err) {
+        console.error("Deletion failed:", err);
+        alert("Failed to delete the exam portal.");
+      }
+    }
+  };
 
   // AI EVALUATION TRIGGER WITH LOADING STATE
   const triggerEvaluation = async (examId) => {
@@ -128,7 +143,7 @@ const FacultyDashboard = () => {
           </div>
         </div>
 
-        {/* REGISTRY SIDEBAR - Now with dynamic exams and AI trigger */}
+        {/* REGISTRY SIDEBAR - Now with dynamic exams, AI trigger, and DELETE functionality */}
         <div className="bg-slate-900 p-8 rounded-3xl text-white shadow-xl shadow-slate-200">
           <h3 className="font-bold text-lg mb-6 flex items-center gap-2">
             <BarChart size={20} className="text-blue-400" />
@@ -139,31 +154,42 @@ const FacultyDashboard = () => {
               <p className="text-slate-500 text-sm italic">No exams deployed yet.</p>
             ) : (
               exams.map((exam) => (
-                <div key={exam.id} className="border-l-2 border-blue-500/30 pl-4 py-2 group">
-                  <p className="font-bold text-sm">{exam.title}</p>
-                  <p className="text-[10px] text-slate-400 mb-3">{exam.subject}</p>
+                <div key={exam.id} className="border-l-2 border-blue-500/30 pl-4 py-2 group flex justify-between items-start">
+                  <div className="flex-1">
+                    <p className="font-bold text-sm">{exam.title}</p>
+                    <p className="text-[10px] text-slate-400 mb-3">{exam.subject}</p>
+                    
+                    {/* DYNAMIC BUTTON WITH LOADING STATE */}
+                    <button 
+                      onClick={() => triggerEvaluation(exam.id)}
+                      disabled={evaluatingId !== null}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
+                        evaluatingId === exam.id 
+                        ? 'bg-amber-500 text-white animate-pulse' 
+                        : 'bg-white/10 hover:bg-blue-600 text-blue-400 hover:text-white'
+                      }`}
+                    >
+                      {evaluatingId === exam.id ? (
+                        <>
+                          <Loader2 size={12} className="animate-spin" />
+                          AI Processing...
+                        </>
+                      ) : (
+                        <>
+                          <Play size={12} />
+                          Run AI Evaluation
+                        </>
+                      )}
+                    </button>
+                  </div>
                   
-                  {/* DYNAMIC BUTTON WITH LOADING STATE */}
+                  {/* TRASH ICON FOR DELETION */}
                   <button 
-                    onClick={() => triggerEvaluation(exam.id)}
-                    disabled={evaluatingId !== null}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
-                      evaluatingId === exam.id 
-                      ? 'bg-amber-500 text-white animate-pulse' 
-                      : 'bg-white/10 hover:bg-blue-600 text-blue-400 hover:text-white'
-                    }`}
+                    onClick={() => deleteExam(exam.id)}
+                    className="p-2 text-slate-500 hover:text-red-500 transition-colors"
+                    title="Delete Exam Portal"
                   >
-                    {evaluatingId === exam.id ? (
-                      <>
-                        <Loader2 size={12} className="animate-spin" />
-                        AI Processing...
-                      </>
-                    ) : (
-                      <>
-                        <Play size={12} />
-                        Run AI Evaluation
-                      </>
-                    )}
+                    <Trash2 size={16} />
                   </button>
                 </div>
               ))

@@ -18,6 +18,8 @@ const StudentDashboard = ({ user, onLogout }) => {
 
   const handleUpload = async (e) => {
     e.preventDefault();
+    if (!uploadFile) return alert("Please select a file first.");
+    
     const formData = new FormData();
     formData.append('file', uploadFile);
     formData.append('studentId', user.id);
@@ -27,6 +29,7 @@ const StudentDashboard = ({ user, onLogout }) => {
       await axios.post('http://localhost:5000/api/upload-script', formData);
       alert("Script Uploaded Successfully!");
       setSelectedExamId(null);
+      setUploadFile(null);
     } catch (err) {
       alert(err.response?.data?.message || "Submission failed.");
     }
@@ -34,7 +37,7 @@ const StudentDashboard = ({ user, onLogout }) => {
 
   return (
     <div className="flex min-h-screen bg-[#F8FAFC]">
-      {/* --- SIDEBAR (EDU-GRADE STYLE) --- */}
+      {/* --- SIDEBAR --- */}
       <aside className="w-72 bg-[#1A1C4B] text-white flex flex-col fixed h-full shadow-2xl">
         <div className="p-8">
           <div className="flex items-center gap-3 mb-10">
@@ -92,9 +95,6 @@ const StudentDashboard = ({ user, onLogout }) => {
               {activeTab === 'exams' ? 'REAL-TIME EXAMINATION LIFECYCLE MANAGEMENT' : 'AUDIT TRAIL & REPORT GENERATION'}
             </p>
           </div>
-          <div className="bg-white px-6 py-3 rounded-2xl shadow-sm border text-xs font-bold text-slate-400">
-            SERVER TIME: <span className="text-[#1A1C4B]">{new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-          </div>
         </header>
 
         <div className="bg-white rounded-[40px] border border-slate-100 shadow-sm p-10 min-h-[500px]">
@@ -117,7 +117,7 @@ const StudentDashboard = ({ user, onLogout }) => {
       {/* --- UPLOAD MODAL --- */}
       {selectedExamId && (
         <div className="fixed inset-0 bg-[#1A1C4B]/60 backdrop-blur-sm flex items-center justify-center z-[100] p-6">
-          <div className="bg-white p-10 rounded-[32px] max-w-md w-full shadow-2xl animate-in zoom-in duration-300">
+          <div className="bg-white p-10 rounded-[32px] max-w-md w-full shadow-2xl">
             <h3 className="text-2xl font-black text-[#1A1C4B] mb-2">Secure Submission</h3>
             <p className="text-slate-500 text-sm mb-6 font-medium">Upload your answer script for AI evaluation.</p>
             <form onSubmit={handleUpload} className="space-y-6">
@@ -129,12 +129,12 @@ const StudentDashboard = ({ user, onLogout }) => {
                   onChange={(e) => setUploadFile(e.target.files[0])}
                 />
                 <label htmlFor="file-upload" className="cursor-pointer">
-                  <Upload size={32} className="mx-auto text-blue-500 mb-2" />
+                  <FileText size={32} className="mx-auto text-blue-500 mb-2" />
                   <p className="text-sm font-bold text-slate-700">{uploadFile ? uploadFile.name : "Select PDF or Image"}</p>
                 </label>
               </div>
               <div className="flex gap-4">
-                <button type="submit" className="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black hover:bg-blue-700 transition shadow-lg shadow-blue-200">
+                <button type="submit" className="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black hover:bg-blue-700 transition">
                   SUBMIT SCRIPT
                 </button>
                 <button type="button" onClick={() => setSelectedExamId(null)} className="flex-1 bg-slate-100 text-slate-500 py-4 rounded-2xl font-black hover:bg-slate-200">
@@ -149,10 +149,13 @@ const StudentDashboard = ({ user, onLogout }) => {
   );
 };
 
-// --- HELPER UI COMPONENTS ---
-
 const ExamCard = ({ exam, onUpload }) => {
   const isExpired = new Date() > new Date(exam.end_time);
+  
+  const handleViewQP = () => {
+    window.open(`http://localhost:5000/api/view-qp/${exam.id}`, '_blank');
+  };
+
   return (
     <div className="flex items-center justify-between p-6 bg-slate-50 rounded-3xl border border-slate-100 group hover:border-blue-200 transition-all">
       <div className="flex items-center gap-6">
@@ -162,17 +165,23 @@ const ExamCard = ({ exam, onUpload }) => {
         <div>
           <h4 className="font-bold text-slate-800 text-lg">{exam.title}</h4>
           <p className="text-xs font-black text-slate-400 uppercase tracking-widest">{exam.subject}</p>
+          <button 
+            onClick={handleViewQP}
+            className="text-[10px] text-blue-600 font-bold hover:underline mt-2 flex items-center gap-1 uppercase"
+          >
+            <Search size={12} /> View Question Paper
+          </button>
         </div>
       </div>
       <div className="text-right flex items-center gap-8">
-        <div className="text-right">
+        <div>
           <p className="text-[10px] font-black text-slate-400 uppercase">Deadline</p>
           <p className={`text-sm font-bold ${isExpired ? 'text-red-500' : 'text-slate-700'}`}>
             {new Date(exam.end_time).toLocaleDateString()}
           </p>
         </div>
         {!isExpired ? (
-          <button onClick={onUpload} className="bg-[#1A1C4B] text-white px-8 py-3 rounded-2xl font-black text-xs hover:bg-blue-600 transition shadow-xl shadow-slate-200">
+          <button onClick={onUpload} className="bg-[#1A1C4B] text-white px-8 py-3 rounded-2xl font-black text-xs hover:bg-blue-600 transition">
             UPLOAD SCRIPT
           </button>
         ) : (
@@ -191,7 +200,5 @@ const EmptyState = ({ message }) => (
     <p className="font-black text-slate-400 tracking-[0.2em]">{message}</p>
   </div>
 );
-
-const Upload = ({ size, className }) => <FileText size={size} className={className} />;
 
 export default StudentDashboard;
