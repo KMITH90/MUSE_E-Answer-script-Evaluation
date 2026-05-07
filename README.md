@@ -4,7 +4,7 @@ MUSE_E is an AI-powered answer script evaluation system developed to automate th
 
 ---
 
-## 🚀 Features
+## Features
 
 - Automated descriptive answer evaluation
 - OCR-based text extraction from answer sheets
@@ -16,7 +16,7 @@ MUSE_E is an AI-powered answer script evaluation system developed to automate th
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - React.js
@@ -37,7 +37,7 @@ MUSE_E is an AI-powered answer script evaluation system developed to automate th
 
 ---
 
-## 📌 Project Objectives
+## Project Objectives
 
 - Reduce manual correction time
 - Improve evaluation consistency
@@ -46,36 +46,7 @@ MUSE_E is an AI-powered answer script evaluation system developed to automate th
 
 ---
 
-## ⚙️ Modules
-
-### 👨‍🏫 Admin Module
-- Manage users
-- Upload answer keys
-- Monitor evaluations
-
-### 👨‍🎓 Student Module
-- Upload answer sheets
-- View evaluation results
-
-### 🤖 Evaluation Engine
-- OCR text extraction
-- NLP preprocessing
-- Semantic similarity comparison
-- Score generation
-
----
-
-## 📷 Screenshots
-
-> Add screenshots of:
-- Login Page
-- Dashboard
-- Upload Interface
-- Evaluation Result Page
-
----
-
-## 🔄 Workflow
+## Workflow
 
 1. User uploads answer script
 2. OCR extracts text from the document
@@ -84,29 +55,7 @@ MUSE_E is an AI-powered answer script evaluation system developed to automate th
 5. Cosine similarity calculates semantic relevance
 6. Scores are generated automatically
 
----
-
-## 📚 Future Enhancements
-
-- Advanced AI-based grading models
-- Handwritten text recognition improvement
-- Multi-language support
-- Analytics dashboard
-
----
-
-## 🧠 Learning Outcomes
-
-- Practical implementation of NLP concepts
-- API integration and backend development
-- Frontend-backend integration
-- AI-based evaluation workflows
-- Database management and authentication systems
-
----
-
-## 👩‍💻 By
+## By
 
 Mitra K  
-Computer Science Engineering  
-KGiSL Institute of Technology
+
