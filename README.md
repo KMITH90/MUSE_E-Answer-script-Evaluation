@@ -55,7 +55,5 @@ MUSE_E is an AI-powered answer script evaluation system developed to automate th
 5. Cosine similarity calculates semantic relevance
 6. Scores are generated automatically
 
-## By
 
-Mitra K  
 
